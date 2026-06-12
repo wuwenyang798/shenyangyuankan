@@ -1,0 +1,6 @@
+---
+const { tags = [] } = Astro.props;
+---
+<div class="flex flex-wrap gap-2">
+  {tags.map((tag:string) => <a href={`/tags/${encodeURIComponent(tag)}/`} class="rounded-full border border-line bg-[#0B1020] px-3 py-1 text-xs text-slate-300 hover:border-cyan">#{tag}</a>)}
+</div>

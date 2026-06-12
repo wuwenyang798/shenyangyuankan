@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+const section = 'ai';
+const names = { ai: 'AI 知识', ecommerce: '跨境电商知识', logistics: '跨境物流知识' };
+const descs = { ai: 'AI 工具、自动化与跨境业务应用内容。', ecommerce: '平台运营、选品、广告、合规、支付与数据分析。', logistics: '国际物流、海外仓、清关、报价结构与异常处理。' };
+const articles = (await getCollection(section)).filter((a) => !a.data.draft).sort((a,b)=>+b.data.date-+a.data.date);
+---
+<BaseLayout title={names[section] + ' | 深洋远瞰'} description={descs[section]}>
+  <section class="mx-auto max-w-7xl px-5 py-14">
+    <p class="text-cyan">Knowledge</p><h1 class="mt-3 text-4xl font-bold">{names[section]}</h1><p class="mt-4 text-lg text-muted">{descs[section]}</p>
+    <div class="mt-8 grid gap-5 md:grid-cols-3">{articles.map((article) => <ArticleCard article={article} />)}</div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,7 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CooperationForm from '../components/CooperationForm.astro';
+---
+<BaseLayout title="交流合作 | 深洋远瞰" description="商务合作、内容合作、资源对接与跨境业务交流入口。">
+  <section class="mx-auto grid max-w-7xl gap-8 px-5 py-14 md:grid-cols-[.9fr_1.1fr]"><div><p class="text-cyan">Cooperation</p><h1 class="mt-3 text-4xl font-bold">商务合作与资源对接</h1><p class="mt-5 leading-8 text-slate-300">欢迎围绕 AI 工具、跨境电商、国际物流、海外仓、内容共创与渠道资源进行合作。</p><div class="mt-8 grid gap-4">{['内容合作','服务商资源','物流渠道','AI 工具生态'].map((item) => <div class="rounded-2xl border border-line bg-panel/70 p-5">◆ {item}</div>)}</div></div><CooperationForm /></section>
+</BaseLayout>

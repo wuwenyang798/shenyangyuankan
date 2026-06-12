@@ -1,0 +1,12 @@
+---
+const nav = [ ['首页','/'], ['AI 知识','/ai/'], ['跨境电商','/ecommerce/'], ['跨境物流','/logistics/'], ['价格获取','/pricing/'], ['交流合作','/cooperation/'], ['关于我们','/about/'] ];
+---
+<header class="sticky top-0 z-30 border-b border-line bg-night/80 backdrop-blur">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
+    <a href="/" class="flex items-center gap-2 font-bold"><span class="h-3 w-3 rounded-full bg-cyan"></span>深洋远瞰</a>
+    <div class="hidden gap-5 text-sm text-slate-300 md:flex">
+      {nav.map(([label, href]) => <a class="hover:text-white" href={href}>{label}</a>)}
+    </div>
+    <a class="rounded-full border border-brand px-4 py-2 text-sm text-white" href="/pricing/">获取报价</a>
+  </nav>
+</header>

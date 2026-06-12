@@ -1,0 +1,12 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+export async function getStaticPaths() {
+  const articles = await getCollection('logistics');
+  return articles.filter((a) => !a.data.draft).map((article) => ({ params: { slug: article.slug }, props: { article } }));
+}
+const { article } = Astro.props;
+const all = await getCollection('logistics');
+const related = all.filter((item) => item.slug !== article.slug && !item.data.draft && item.data.tags.some((tag) => article.data.tags.includes(tag))).slice(0, 2);
+---
+<ArticleLayout article={article} related={related} />

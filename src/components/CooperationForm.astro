@@ -1,0 +1,30 @@
+<form class="grid gap-4 rounded-3xl border border-line bg-panel/70 p-6" data-form="cooperation" action="/api/submit-cooperation" method="post">
+  <div class="grid gap-4 md:grid-cols-2">
+    <label class="field">姓名<input class="input" name="name" required minlength="2" maxlength="20" /></label>
+    <label class="field">公司<input class="input" name="company" maxlength="50" /></label>
+    <label class="field">合作类型<input class="input" name="cooperationType" required placeholder="商务/内容/资源/其他" /></label>
+    <label class="field">联系方式<input class="input" name="contact" required placeholder="手机号或邮箱" /></label>
+  </div>
+  <label class="field">合作需求描述<textarea class="input" name="message" rows="5" required minlength="5" maxlength="500"></textarea></label>
+  <p class="form-message text-sm text-muted"></p>
+  <button class="btn" type="submit">提交合作需求</button>
+</form>
+<script>
+  document.querySelectorAll('form[data-form]').forEach((form) => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const target = event.currentTarget as HTMLFormElement;
+      const button = target.querySelector('button') as HTMLButtonElement;
+      const message = target.querySelector('.form-message') as HTMLElement;
+      button.disabled = true;
+      message.textContent = '提交中...';
+      try {
+        const res = await fetch(target.action, { method: 'POST', body: new FormData(target) });
+        const data = await res.json();
+        message.textContent = data.message || (res.ok ? '提交成功' : '提交失败');
+        if (res.ok) target.reset();
+      } catch { message.textContent = '网络异常，请稍后重试'; }
+      finally { button.disabled = false; }
+    });
+  });
+</script>

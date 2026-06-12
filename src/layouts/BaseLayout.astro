@@ -1,0 +1,27 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+const { title = '深洋远瞰', description = '聚焦 AI、跨境电商与跨境物流知识的专业内容平台。', canonical = Astro.url.href } = Astro.props;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <link rel="icon" href="/favicon.svg" />
+  </head>
+  <body class="min-h-screen bg-night text-slate-50">
+    <div class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_20%_10%,rgba(59,130,246,.28),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(6,182,212,.18),transparent_25%)]"></div>
+    <Header />
+    <main><slot /></main>
+    <Footer />
+  </body>
+</html>

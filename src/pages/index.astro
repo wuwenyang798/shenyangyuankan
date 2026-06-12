@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getAllArticles } from '../utils/getAllArticles';
+const articles = (await getAllArticles()).slice(0, 6);
+const sections = [
+  { title: 'AI 知识', href: '/ai/', desc: 'AI 工具教程、自动化提效与跨境业务应用。' },
+  { title: '跨境电商知识', href: '/ecommerce/', desc: '平台运营、选品、广告投放、合规与数据分析。' },
+  { title: '跨境物流知识', href: '/logistics/', desc: '国际物流、海外仓、清关、渠道和报价结构。' }
+];
+---
+<BaseLayout title="深洋远瞰 | AI、跨境电商与跨境物流知识平台" description="深洋远瞰是聚焦 AI、跨境电商、跨境物流、价格获取与交流合作的内容型知识网站。">
+  <Hero />
+  <section class="mx-auto max-w-7xl px-5 py-10">
+    <div class="grid gap-5 md:grid-cols-3">
+      {sections.map((s) => <a class="rounded-3xl border border-line bg-panel/70 p-6 hover:border-brand" href={s.href}><h2 class="text-2xl font-bold">{s.title}</h2><p class="mt-3 leading-7 text-muted">{s.desc}</p></a>)}
+    </div>
+  </section>
+  <section class="mx-auto max-w-7xl px-5 py-12">
+    <div class="mb-6 flex items-end justify-between"><div><p class="text-cyan">Latest Articles</p><h2 class="mt-2 text-3xl font-bold">最新文章</h2></div><a class="text-sm text-cyan" href="/categories/AI/">查看分类 →</a></div>
+    <div class="grid gap-5 md:grid-cols-3">{articles.map((article) => <ArticleCard article={article} />)}</div>
+  </section>
+  <section class="mx-auto max-w-7xl px-5 py-12"><div class="rounded-[2rem] border border-line bg-gradient-to-r from-brand/20 to-cyan/10 p-8 md:p-12"><h2 class="text-3xl font-bold">需要物流价格或合作资源？</h2><p class="mt-4 max-w-3xl text-slate-300">提交货物、起运地、目的地与运输方式，我们将根据需求对接合适渠道与合作资源。</p><div class="mt-6 flex gap-4"><a class="btn" href="/pricing/">获取价格</a><a class="rounded-full border border-line px-5 py-3 font-bold" href="/cooperation/">交流合作</a></div></div></section>
+</BaseLayout>

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://shenyang-yuankan.pages.dev/sitemap-index.xml

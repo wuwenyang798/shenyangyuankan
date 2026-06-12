@@ -1,0 +1,35 @@
+<form class="grid gap-4 rounded-3xl border border-line bg-panel/70 p-6" data-form="price" action="/api/submit-price" method="post">
+  <div class="grid gap-4 md:grid-cols-2">
+    <label class="field">姓名<input class="input" name="name" required minlength="2" maxlength="20" /></label>
+    <label class="field">公司<input class="input" name="company" maxlength="50" /></label>
+    <label class="field">联系方式<input class="input" name="contact" required placeholder="手机号或邮箱" /></label>
+    <label class="field">货物类型<input class="input" name="cargoType" required /></label>
+    <label class="field">起运地<input class="input" name="origin" required /></label>
+    <label class="field">目的地<input class="input" name="destination" required /></label>
+    <label class="field">重量/体积<input class="input" type="number" name="weightVolume" min="0.01" step="0.01" required /></label>
+    <label class="field">运输方式<select class="input" name="transport" required><option>海运</option><option>空运</option><option>快递</option><option>其他</option></select></label>
+  </div>
+  <label class="field">备注<textarea class="input" name="remark" rows="4" maxlength="500"></textarea></label>
+  <p class="form-message text-sm text-muted"></p>
+  <button class="btn" type="submit">提交询价需求</button>
+</form>
+<script>
+  document.querySelectorAll('form[data-form]').forEach((form) => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const target = event.currentTarget as HTMLFormElement;
+      const button = target.querySelector('button') as HTMLButtonElement;
+      const message = target.querySelector('.form-message') as HTMLElement;
+      button.disabled = true;
+      message.textContent = '提交中...';
+      try {
+        const res = await fetch(target.action, { method: 'POST', body: new FormData(target) });
+        const data = await res.json();
+        message.textContent = data.message || (res.ok ? '提交成功' : '提交失败');
+        if (res.ok) target.reset();
+      } catch {
+        message.textContent = '网络异常，请稍后重试';
+      } finally { button.disabled = false; }
+    });
+  });
+</script>
