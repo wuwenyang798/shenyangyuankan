@@ -1,7 +1,7 @@
 ---
 title: "国际物流中的海运、空运、快递如何选择"
 description: "从成本、时效、风险角度，比较海运、空运与快递的适用场景。"
-date: "2026-01-07"
+date: "2026-06-07"
 category: "跨境物流"
 tags: ["海运", "空运", "快递", "国际物流"]
 coverImage: "/images/example.jpg"
