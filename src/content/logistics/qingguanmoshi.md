@@ -1,7 +1,7 @@
 ---
 title: "跨境物流报关，你真的懂吗？"
 description: "2026年海关升级，选对9610等合规清关模式、避开双清包税陷阱，是跨境卖家的生存底线。"
-date: "2026-06-10"
+date: "2026-06-11"
 category: "跨境物流"
 tags: ["双清包税", "跨境清关", "海关政策"]
 coverImage: "/images/example.jpg"
