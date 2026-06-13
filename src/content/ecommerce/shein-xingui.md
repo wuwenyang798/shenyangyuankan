@@ -2,7 +2,7 @@
 title: "SHEIN新规暴击，你还能撑多久？"
 description: "2026年6月SHEIN 新规即将落地，频繁发布新政跨境卖家将何去何从？。"
 date: "2026-06-12"
-category: "跨境物流"
+category: "跨境电商"
 tags: ["SHEIN新政策", "跨境物流合规", "半托管卖家"]
 coverImage: "/images/example.jpg"
 draft: false
