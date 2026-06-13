@@ -1,0 +1,243 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="询价接单后台 | 深洋远瞰" description="深洋远瞰内部询价接单管理后台。">
+  <section class="mx-auto max-w-7xl px-5 py-12">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div>
+        <p class="text-cyan">Admin</p>
+        <h1 class="mt-2 text-3xl font-bold md:text-4xl">询价接单后台</h1>
+        <p class="mt-3 max-w-2xl leading-7 text-muted">查看用户提交的物流询价，更新处理状态，填写报价结果，并支持导出 CSV。</p>
+      </div>
+      <div class="rounded-2xl border border-line bg-panel/70 p-4 text-sm text-muted">
+        <p>建议仅内部使用，并在 Cloudflare 中开启 Access 保护。</p>
+      </div>
+    </div>
+
+    <div id="loginPanel" class="mt-8 rounded-3xl border border-line bg-panel/70 p-6">
+      <h2 class="text-xl font-bold">后台登录</h2>
+      <p class="mt-2 text-sm text-muted">请输入你在 Cloudflare Pages 环境变量中设置的 <code>ADMIN_PASSWORD</code>。</p>
+      <div class="mt-5 grid gap-3 md:grid-cols-[1fr_auto]">
+        <input id="adminPassword" class="input" type="password" placeholder="输入后台密码" />
+        <button id="loginButton" class="btn" type="button">进入后台</button>
+      </div>
+      <p id="loginMessage" class="mt-3 text-sm text-muted"></p>
+    </div>
+
+    <div id="adminPanel" class="mt-8 hidden">
+      <div class="grid gap-4 rounded-3xl border border-line bg-panel/70 p-5 lg:grid-cols-[1fr_180px_120px_120px]">
+        <input id="searchInput" class="input" placeholder="搜索姓名、公司、联系方式、路线、备注" />
+        <select id="statusFilter" class="input">
+          <option>全部</option>
+          <option>新询价</option>
+          <option>处理中</option>
+          <option>已报价</option>
+          <option>已成交</option>
+          <option>已关闭</option>
+        </select>
+        <button id="refreshButton" class="btn" type="button">刷新</button>
+        <button id="exportButton" class="btn" type="button">导出</button>
+      </div>
+
+      <div id="summary" class="mt-5 grid gap-4 md:grid-cols-5"></div>
+      <div id="requestList" class="mt-6 grid gap-5"></div>
+      <p id="emptyState" class="mt-8 hidden rounded-2xl border border-line bg-panel/70 p-8 text-center text-muted">暂无询价记录。</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // @ts-nocheck
+  const statuses = ['新询价', '处理中', '已报价', '已成交', '已关闭'];
+  const state = {
+    token: localStorage.getItem('admin_token') || '',
+    items: []
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const loginPanel = $('loginPanel');
+  const adminPanel = $('adminPanel');
+  const loginMessage = $('loginMessage');
+  const requestList = $('requestList');
+  const emptyState = $('emptyState');
+  const summary = $('summary');
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, (char) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;'
+    }[char]));
+  }
+
+  function tokenHeaders() {
+    return { Authorization: `Bearer ${state.token}` };
+  }
+
+  function showAdmin() {
+    loginPanel.classList.add('hidden');
+    adminPanel.classList.remove('hidden');
+  }
+
+  function statusClass(status) {
+    if (status === '新询价') return 'text-cyan';
+    if (status === '处理中') return 'text-blue-300';
+    if (status === '已报价') return 'text-emerald-300';
+    if (status === '已成交') return 'text-green-300';
+    return 'text-slate-400';
+  }
+
+  function renderSummary(items) {
+    const counts = Object.fromEntries(statuses.map((status) => [status, 0]));
+    items.forEach((item) => { counts[item.status] = (counts[item.status] || 0) + 1; });
+    summary.innerHTML = statuses.map((status) => `
+      <div class="rounded-2xl border border-line bg-panel/70 p-4">
+        <p class="text-sm text-muted">${status}</p>
+        <p class="mt-2 text-2xl font-bold ${statusClass(status)}">${counts[status] || 0}</p>
+      </div>
+    `).join('');
+  }
+
+  function renderItems(items) {
+    renderSummary(items);
+    emptyState.classList.toggle('hidden', items.length !== 0);
+    requestList.innerHTML = items.map((item) => {
+      const options = statuses.map((status) => `<option value="${status}" ${item.status === status ? 'selected' : ''}>${status}</option>`).join('');
+      return `
+        <article class="rounded-3xl border border-line bg-panel/70 p-5" data-id="${item.id}">
+          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <div class="flex flex-wrap items-center gap-3">
+                <span class="rounded-full border border-line px-3 py-1 text-sm text-muted">#${item.id}</span>
+                <strong class="text-xl">${escapeHtml(item.name)}</strong>
+                <span class="text-sm text-muted">${escapeHtml(item.company || '无公司')}</span>
+                <span class="text-sm ${statusClass(item.status)}">${escapeHtml(item.status)}</span>
+              </div>
+              <p class="mt-3 text-sm text-muted">提交时间：${escapeHtml(item.created_at)}　更新时间：${escapeHtml(item.updated_at || '-')}</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="save-btn rounded-full border border-blue-400/50 px-4 py-2 text-sm text-blue-200" type="button">保存</button>
+              <button class="delete-btn rounded-full border border-red-400/50 px-4 py-2 text-sm text-red-200" type="button">删除</button>
+            </div>
+          </div>
+
+          <div class="mt-5 grid gap-4 md:grid-cols-4">
+            <div><p class="text-xs text-muted">联系方式</p><p class="mt-1">${escapeHtml(item.contact)}</p></div>
+            <div><p class="text-xs text-muted">货物类型</p><p class="mt-1">${escapeHtml(item.cargo_type)}</p></div>
+            <div><p class="text-xs text-muted">起运地</p><p class="mt-1">${escapeHtml(item.origin)}</p></div>
+            <div><p class="text-xs text-muted">目的地</p><p class="mt-1">${escapeHtml(item.destination)}</p></div>
+            <div><p class="text-xs text-muted">重量/体积</p><p class="mt-1">${escapeHtml(item.weight_volume)}</p></div>
+            <div><p class="text-xs text-muted">运输方式</p><p class="mt-1">${escapeHtml(item.transport)}</p></div>
+            <div class="md:col-span-2"><p class="text-xs text-muted">用户备注</p><p class="mt-1">${escapeHtml(item.remark || '-')}</p></div>
+          </div>
+
+          <div class="mt-5 grid gap-4 md:grid-cols-[180px_1fr_1.2fr]">
+            <label class="field">处理状态
+              <select class="input status-input">${options}</select>
+            </label>
+            <label class="field">报价结果
+              <input class="input price-input" value="${escapeHtml(item.quoted_price || '')}" placeholder="例如：美线空运 35元/kg，有效期至本周五" />
+            </label>
+            <label class="field">内部备注
+              <textarea class="input note-input" rows="2" placeholder="内部跟进记录，用户不可见">${escapeHtml(item.internal_note || '')}</textarea>
+            </label>
+          </div>
+          <p class="row-message mt-3 text-sm text-muted"></p>
+        </article>
+      `;
+    }).join('');
+  }
+
+  async function loadRequests() {
+    const status = $('statusFilter').value;
+    const q = $('searchInput').value.trim();
+    const params = new URLSearchParams({ status, q });
+    const res = await fetch(`/api/admin/requests?${params}`, { headers: tokenHeaders() });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || '读取失败');
+    state.items = data.data || [];
+    renderItems(state.items);
+  }
+
+  async function saveRequest(card) {
+    const id = Number(card.dataset.id);
+    const message = card.querySelector('.row-message');
+    message.textContent = '保存中...';
+    const payload = {
+      id,
+      status: card.querySelector('.status-input').value,
+      quotedPrice: card.querySelector('.price-input').value,
+      internalNote: card.querySelector('.note-input').value
+    };
+    const res = await fetch('/api/admin/update-request', {
+      method: 'POST',
+      headers: { ...tokenHeaders(), 'content-type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    message.textContent = data.message || (res.ok ? '已保存' : '保存失败');
+    if (res.ok) await loadRequests();
+  }
+
+  async function deleteRequest(card) {
+    if (!confirm('确定删除这条询价记录吗？删除后不可恢复。')) return;
+    const id = Number(card.dataset.id);
+    const res = await fetch('/api/admin/delete-request', {
+      method: 'POST',
+      headers: { ...tokenHeaders(), 'content-type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    const data = await res.json();
+    if (!res.ok) alert(data.message || '删除失败');
+    await loadRequests();
+  }
+
+  async function exportRequests() {
+    const res = await fetch('/api/admin/export-requests', { headers: tokenHeaders() });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.message || '导出失败');
+      return;
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `price-requests-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  $('loginButton').addEventListener('click', async () => {
+    state.token = $('adminPassword').value.trim();
+    if (!state.token) {
+      loginMessage.textContent = '请先输入后台密码。';
+      return;
+    }
+    localStorage.setItem('admin_token', state.token);
+    loginMessage.textContent = '正在登录...';
+    try {
+      await loadRequests();
+      showAdmin();
+    } catch (error) {
+      loginMessage.textContent = error.message || '登录失败。';
+    }
+  });
+
+  $('refreshButton').addEventListener('click', () => loadRequests().catch((error) => alert(error.message || '读取失败')));
+  $('exportButton').addEventListener('click', exportRequests);
+  $('statusFilter').addEventListener('change', () => loadRequests().catch((error) => alert(error.message || '读取失败')));
+  $('searchInput').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') loadRequests().catch((error) => alert(error.message || '读取失败'));
+  });
+
+  requestList.addEventListener('click', (event) => {
+    const target = event.target;
+    const card = target.closest('article[data-id]');
+    if (!card) return;
+    if (target.classList.contains('save-btn')) saveRequest(card);
+    if (target.classList.contains('delete-btn')) deleteRequest(card);
+  });
+
+  if (state.token) {
+    loadRequests().then(showAdmin).catch(() => localStorage.removeItem('admin_token'));
+  }
+</script>

@@ -1,0 +1,11 @@
+# 这个文件只是示例，不要直接改名为 wrangler.toml，除非你已经创建了 D1 数据库并填入真实 database_id。
+# 更适合新手的方法是在 Cloudflare Pages 后台绑定 D1：Settings -> Functions -> D1 database bindings。
+
+name = "shenyangyuankan"
+compatibility_date = "2026-06-01"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "shenyangyuankan-db"
+database_id = "替换为你的 D1 database_id"
