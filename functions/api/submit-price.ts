@@ -3,9 +3,7 @@ import { notifyAdminNewPriceRequest } from './_shared/notify-admin';
 
 type RuntimeEnv = {
   DB?: D1Database;
-  RESEND_API_KEY?: string;
-  RESEND_FROM_EMAIL?: string;
-  ADMIN_NOTIFY_EMAILS?: string;
+  FEISHU_WEBHOOK_URL?: string;
   ADMIN_CONSOLE_URL?: string;
 };
 
