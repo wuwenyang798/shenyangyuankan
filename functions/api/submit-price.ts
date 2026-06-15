@@ -1,7 +1,12 @@
 import { priceFormSchema, clean } from '../../src/utils/validateForm';
+import { notifyAdminNewPriceRequest } from '../_shared/notify-admin';
 
 type RuntimeEnv = {
   DB?: D1Database;
+  RESEND_API_KEY?: string;
+  RESEND_FROM_EMAIL?: string;
+  ADMIN_NOTIFY_EMAILS?: string;
+  ADMIN_CONSOLE_URL?: string;
 };
 
 function json(data: unknown, init?: ResponseInit) {
@@ -46,9 +51,24 @@ export const onRequestPost: PagesFunction<RuntimeEnv> = async ({ request, env })
     normalizeValue(data.remark)
   ).run();
 
+  const requestId = result.meta?.last_row_id;
+
+  await notifyAdminNewPriceRequest(env, {
+    id: requestId,
+    name: normalizeValue(data.name),
+    company: normalizeValue(data.company),
+    contact: normalizeValue(data.contact),
+    cargoType: normalizeValue(data.cargoType),
+    origin: normalizeValue(data.origin),
+    destination: normalizeValue(data.destination),
+    weightVolume: String(data.weightVolume),
+    transport: normalizeValue(data.transport),
+    remark: normalizeValue(data.remark)
+  });
+
   return json({
     ok: true,
-    id: result.meta?.last_row_id,
-    message: `询价需求已提交，单号 #${result.meta?.last_row_id ?? '已生成'}。我们会尽快处理。`
+    id: requestId,
+    message: `询价需求已提交，单号 #${requestId ?? '已生成'}。我们会尽快处理。`
   });
 };
