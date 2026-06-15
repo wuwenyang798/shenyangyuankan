@@ -51,8 +51,9 @@ export const onRequestPost: PagesFunction<RuntimeEnv> = async ({ request, env })
     normalizeValue(data.remark)
   ).run();
 
-  const requestId = result.meta?.last_row_id;
+const requestId = result.meta?.last_row_id;
 
+try {
   await notifyAdminNewPriceRequest(env, {
     id: requestId,
     name: normalizeValue(data.name),
@@ -65,6 +66,13 @@ export const onRequestPost: PagesFunction<RuntimeEnv> = async ({ request, env })
     transport: normalizeValue(data.transport),
     remark: normalizeValue(data.remark)
   });
+} catch (error) {
+  return json({
+    ok: false,
+    message: '邮件通知执行失败',
+    error: String(error)
+  });
+}
 
   return json({
     ok: true,
