@@ -1,5 +1,5 @@
 import { priceFormSchema, clean } from '../../src/utils/validateForm';
-import { notifyAdminNewPriceRequest } from '../_shared/notify-admin';
+import { notifyAdminNewPriceRequest } from './_shared/notify-admin';
 
 type RuntimeEnv = {
   DB?: D1Database;
