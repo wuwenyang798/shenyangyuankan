@@ -1,7 +1,7 @@
 ---
 title: "亚马逊FBM新规落地：发货太快也不行？"
 description: "6月29日起，亚马逊对自发货卖家“动手”了——你填的发货时间，必须和实际完全一致。"
-date: "2026-01-06"
+date: "2026-06-18"
 category: "跨境电商"
 tags: ["亚马逊FBM", "Amazon", "物流考核"]
 coverImage: "/images/example.jpg"
