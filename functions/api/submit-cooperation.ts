@@ -1,14 +1,16 @@
-
 import { createLead } from "../../src/crm/pipeline";
 
-export async function POST({ request }) {
+export async function POST({ request, env }) {
   const body = await request.json();
 
   const lead = await createLead(
+    env,
     body,
     "cooperation",
     request.url
   );
 
-  return new Response(JSON.stringify({ success: true, lead }));
+  return new Response(JSON.stringify({ success: true, lead }), {
+    headers: { "Content-Type": "application/json" },
+  });
 }
