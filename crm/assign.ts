@@ -1,4 +1,3 @@
-
 const sales = ["Sales-A", "Sales-B", "Sales-C"];
 let index = 0;
 
