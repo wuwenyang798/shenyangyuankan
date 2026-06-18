@@ -28,3 +28,4 @@
     "node": ">=20"
   }
 }
+"rebuild_trigger": "fix-405-issue"
