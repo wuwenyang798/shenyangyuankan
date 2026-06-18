@@ -1,10 +1,11 @@
-
-export function calcScore(lead: any): number {
+export function calcScore(data: any) {
   let score = 0;
-  if (lead.email) score += 20;
-  if (lead.company) score += 25;
-  if (lead.phone) score += 10;
-  if (lead.budget) score += 20;
-  if (lead.message && lead.message.length > 20) score += 15;
+
+  if (data.email) score += 20;
+  if (data.company) score += 25;
+  if (data.phone) score += 10;
+  if (data.budget) score += 20;
+  if (data.message?.length > 20) score += 15;
+
   return Math.min(score, 100);
 }
