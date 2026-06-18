@@ -3,8 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
 const section = 'logistics';
-const names = { ai: 'AI数字化', ecommerce: '跨境电商', logistics: '跨境物流' };
-const descs = { ai: 'AI教程、AI跨境应用。', ecommerce: '平台运营、平台合规与政策分析。', logistics: '国际物流运输、海外仓、直邮小包、清关。' };
+const names = { ai: 'AI 知识', ecommerce: '跨境电商知识', logistics: '跨境物流知识' };
+const descs = { ai: 'AI 工具、自动化与跨境业务应用内容。', ecommerce: '平台运营、选品、广告、合规、支付与数据分析。', logistics: '国际物流、海外仓、清关、报价结构与异常处理。' };
 const articles = (await getCollection(section)).filter((a) => !a.data.draft).sort((a,b)=>+b.data.date-+a.data.date);
 ---
 <BaseLayout title={names[section] + ' | 深洋远瞰'} description={descs[section]}>
