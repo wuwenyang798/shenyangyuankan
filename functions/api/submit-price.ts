@@ -1,14 +1,28 @@
-
-import { createLead } from "../../src/crm/pipeline";
+export const runtime = "edge";
 
 export async function POST({ request }) {
-  const body = await request.json();
+  try {
+    const body = await request.json();
 
-  const lead = await createLead(
-    body,
-    "price",
-    request.url
-  );
-
-  return new Response(JSON.stringify({ success: true, lead }));
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "OK",
+        data: body,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (e) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Invalid request",
+      }),
+      { status: 400 }
+    );
+  }
 }
