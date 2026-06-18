@@ -5,7 +5,7 @@ export async function POST({ request }) {
     return new Response(
       JSON.stringify({
         success: true,
-        message: "submit-price OK",
+        message: "submit-price success",
         data: body,
       }),
       {
@@ -19,11 +19,9 @@ export async function POST({ request }) {
     return new Response(
       JSON.stringify({
         success: false,
-        error: "Invalid request",
+        error: "invalid request",
       }),
-      {
-        status: 400,
-      }
+      { status: 400 }
     );
   }
 }
