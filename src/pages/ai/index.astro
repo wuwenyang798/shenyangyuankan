@@ -4,7 +4,7 @@ import ArticleCard from '../../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
 const section = 'ai';
 const names = { ai: 'AI 知识', ecommerce: '跨境电商知识', logistics: '跨境物流知识' };
-const descs = { ai: 'AI 工具、自动化与跨境业务应用内容。', ecommerce: '平台运营、选品、广告、合规、支付与数据分析。', logistics: '国际物流、海外仓、清关、报价结构与异常处理。' };
+const descs = { ai: 'AI 资讯、跨境业务应用内容。', ecommerce: '平台运营、跨境电商政策分析。', logistics: '国际物流、海外仓、清关、直邮小包 。' };
 const articles = (await getCollection(section)).filter((a) => !a.data.draft).sort((a,b)=>+b.data.date-+a.data.date);
 ---
 <BaseLayout title={names[section] + ' | 深洋远瞰'} description={descs[section]}>
